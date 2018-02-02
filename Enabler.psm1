@@ -80,6 +80,44 @@ function Get-NCDeviceList{
     END{}
     
 }
+
+function Get-NCDeviceGet{
+    [CmdletBinding()]
+    Param(
+        # Parameter help description
+        [Parameter(Mandatory=$true,
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true)]
+        [int[]]$DeviceId
+        
+    )
+    
+    PROCESS{
+        foreach($Device in $DeviceId){
+            $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
+            $Keypair.Key = 'deviceID'
+            $Keypair.Value = "$Device"
+
+            $Username = $Script:Credential.GetNetworkCredential().UserName
+            $Password = $Script:Credential.GetNetworkCredential().Password
+            $Response = $Script:Ncentral.DeviceGet($Username, $Password, $Keypair)
+
+            $Devices = @()
+            foreach ($i in $Response) {
+                $props = @{}
+                foreach ($item in $i.info) {
+                    $props.add($item.key.split('.')[1], $item.Value)
+                }
+                $obj = New-Object -TypeName psobject -Property $props
+                $Devices += $obj
+            }
+            $Devices
+        }
+    }
+    END{}
+    
+}
+
 function Get-NCServiceOrganisation {
     [CmdletBinding()]
     
@@ -105,3 +143,38 @@ function Get-NCServiceOrganisation {
 }
 
 
+function Get-NCDeviceAssetInfoExport{
+    [CmdletBinding()]
+    Param(
+        # Parameter help description
+        [Parameter(Mandatory=$true,
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true)]
+        [int[]]$DeviceId
+    )
+    
+    PROCESS{
+        foreach($Device in $DeviceId){
+            $Keypair = New-Object "$Script:NameSpace.T_KeyValue"
+            $Keypair.Key = 'TargetByDeviceID'
+            $Keypair.Value = "$Device"
+
+            $Username = $Script:Credential.GetNetworkCredential().UserName
+            $Password = $Script:Credential.GetNetworkCredential().Password
+            $Response = $Script:Ncentral.DeviceAssetInfoExport2("0.0", $Username, $Password, $Keypair)
+
+            $Devices = @()
+            foreach ($i in $Response) {
+                $props = @{}
+                foreach ($item in $i.info) {
+                    $props.add($item.key, $item.Value)
+                }
+                $obj = New-Object -TypeName psobject -Property $props
+                $Devices += $obj
+            }
+            $Devices
+        }
+    }
+    END{}
+    
+}
