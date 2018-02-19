@@ -183,4 +183,5 @@ function Get-NCDeviceAssetInfoExport{
         }
     }
     END{}
+
 }
