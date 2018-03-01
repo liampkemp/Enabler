@@ -21,7 +21,7 @@ function Connect-NCService {
 
 function Get-NCCustomerList {
     [CmdletBinding()]
-    
+    Param()
     $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
     $Keypair.Key = 'ListSOs'
     $Keypair.Value = 'false'
@@ -119,7 +119,7 @@ function Get-NCDeviceGet{
 
 function Get-NCServiceOrganisation {
     [CmdletBinding()]
-    
+    Param()
     $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
     $Keypair.Key = 'ListSOs'
     $Keypair.Value = 'true'
