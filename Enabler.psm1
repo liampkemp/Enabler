@@ -21,7 +21,7 @@ function Connect-NCService {
 
 function Get-NCCustomerList {
     [CmdletBinding()]
-    
+    Param()
     $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
     $Keypair.Key = 'ListSOs'
     $Keypair.Value = 'false'
@@ -89,7 +89,6 @@ function Get-NCDeviceGet{
         ValueFromPipeline=$true,
         ValueFromPipelineByPropertyName=$true)]
         [int[]]$DeviceId
-        
     )
     
     PROCESS{
@@ -120,7 +119,7 @@ function Get-NCDeviceGet{
 
 function Get-NCServiceOrganisation {
     [CmdletBinding()]
-    
+    Param()
     $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
     $Keypair.Key = 'ListSOs'
     $Keypair.Value = 'true'
@@ -150,18 +149,26 @@ function Get-NCDeviceAssetInfoExport{
         [Parameter(Mandatory=$true,
         ValueFromPipeline=$true,
         ValueFromPipelineByPropertyName=$true)]
-        [int[]]$DeviceId
+        [int[]]$DeviceId,
+        [string[]]$InformationCategoriesInclusion=@("asset.customer","asset.device","asset.computersystem","asset.os")
     )
     
     PROCESS{
         foreach($Device in $DeviceId){
+            $keypairCol = @()
+            
             $Keypair = New-Object "$Script:NameSpace.T_KeyValue"
             $Keypair.Key = 'TargetByDeviceID'
-            $Keypair.Value = "$Device"
+            $keypair.Value = $DeviceId
+            $keypairCol += $Keypair
+            $Keypair = New-Object "$Script:NameSpace.T_KeyValue"
+            $Keypair.Key = 'InformationCategoriesInclusion'
+            $keypair.Value = $InformationCategoriesInclusion
+            $keypairCol += $Keypair
 
             $Username = $Script:Credential.GetNetworkCredential().UserName
             $Password = $Script:Credential.GetNetworkCredential().Password
-            $Response = $Script:Ncentral.DeviceAssetInfoExport2("0.0", $Username, $Password, $Keypair)
+            $Response = $Script:Ncentral.DeviceAssetInfoExport2("0.0", $Username, $Password, $KeypairCol)
 
             $Devices = @()
             foreach ($i in $Response) {
@@ -176,5 +183,5 @@ function Get-NCDeviceAssetInfoExport{
         }
     }
     END{}
-    
+
 }
