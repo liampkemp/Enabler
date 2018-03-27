@@ -193,7 +193,7 @@ function Get-NCDevicePropertyList{
         [Parameter(Mandatory=$true,
         ValueFromPipeline=$true,
         ValueFromPipelineByPropertyName=$true)]
-        [object]$Device,
+        [object[]]$Device,
         [Parameter(Mandatory=$true,
         ValueFromPipeline=$true,
         ValueFromPipelineByPropertyName=$true)]
@@ -207,8 +207,17 @@ function Get-NCDevicePropertyList{
             $Password = $Script:Credential.GetNetworkCredential().Password
             $Response = $Script:Ncentral.DevicePropertyList($Username,$Password,$D.deviceid,$D.longname,$Filter.filterid,$filter.longname,$false)
 
+            $results = @()
+            foreach($r in $Response)
+            {
+                foreach($i in $r.Properties)
+                {
+                    $D | Add-Member NoteProperty $i.Label $i.Value -Force
+                }
+                $results += $D
+            }
 
-            $Response
+            $results
         }
     }
     END{}
