@@ -224,3 +224,50 @@ function Get-NCDevicePropertyList{
 
 }
 
+
+
+
+function Get-NCActiveIssueList{
+    [CmdletBinding()]
+    Param(
+        # Parameter help description
+        [Parameter(Mandatory=$true,
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true)]
+        [object[]]$Customer
+    )
+    
+    PROCESS{
+        foreach($C in $Customer){
+
+            $keypairCol = @()
+            
+            $Keypair = New-Object "$Script:NameSpace.T_KeyPair"
+            $Keypair.Key = 'CustomerId'
+            $keypair.Value = $C.customerid
+            $keypairCol += $Keypair
+
+
+            $Username = $Script:Credential.GetNetworkCredential().UserName
+            $Password = $Script:Credential.GetNetworkCredential().Password
+            $Response = $Script:Ncentral.ActiveIssuesList($Username,$Password,$KeypairCol)
+
+            $results = @()
+            foreach($r in $Response)
+            {
+                
+                $o = New-Object psobject
+
+                foreach($i in $r.Issue)
+                {$o | Add-Member NoteProperty $i.Key $i.Value}
+                
+                $results += $o
+            }
+
+            $results
+        }
+    }
+    END{}
+
+}
+
