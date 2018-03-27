@@ -185,3 +185,33 @@ function Get-NCDeviceAssetInfoExport{
     END{}
 
 }
+
+function Get-NCDevicePropertyList{
+    [CmdletBinding()]
+    Param(
+        # Parameter help description
+        [Parameter(Mandatory=$true,
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true)]
+        [object]$Device,
+        [Parameter(Mandatory=$true,
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true)]
+        [object]$Filter
+    )
+    
+    PROCESS{
+        foreach($D in $Device){
+
+            $Username = $Script:Credential.GetNetworkCredential().UserName
+            $Password = $Script:Credential.GetNetworkCredential().Password
+            $Response = $Script:Ncentral.DevicePropertyList($Username,$Password,$D.deviceid,$D.longname,$Filter.filterid,$filter.longname,$false)
+
+
+            $Response
+        }
+    }
+    END{}
+
+}
+
