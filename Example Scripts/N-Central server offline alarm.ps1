@@ -14,7 +14,12 @@ while($true)
     {
         clear
         $agentsOffline | select 'activeissue.customername','activeissue.devicename','activeissue.deviceclass','activeissue.servicename','activeissue.transitiontime' -Unique | ft
-        (New-Object Media.SoundPlayer "$pwd\Example Scripts\alarm.wav").PlaySync();
+        $sec=0
+        while($sec -lt 30)
+        {
+            (New-Object Media.SoundPlayer "$pwd\Example Scripts\alarm.wav").PlaySync();
+            $sec += 4 # the amount of seconds the wav file takes
+        }
     }
     else
     {
