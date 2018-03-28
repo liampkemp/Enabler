@@ -18,7 +18,8 @@ while($true)
         while($sec -lt 30)
         {
             (New-Object Media.SoundPlayer "$pwd\Example Scripts\alarm.wav").PlaySync();
-            $sec += 4 # the amount of seconds the wav file takes
+            Start-Sleep 1
+            $sec += 5 # the amount of seconds the wav file takes + 1 sec for sleep
         }
     }
     else
